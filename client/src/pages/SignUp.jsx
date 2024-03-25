@@ -1,10 +1,10 @@
+import { FcGoogle } from "react-icons/fc";
+import { MdOutlineAddHomeWork } from "react-icons/md";
 import { Link } from "react-router-dom";
-import { MdOutlineHomeWork } from "react-icons/md";
-
-const SignIn = () => {
+const SignUp = () => {
   return (
     <div>
-      <section className="vh-200 ">
+      <section className="vh-100 ">
         <div className="container py-5 h-100">
           <div className="row d-flex align-items-center justify-content-center h-100">
             <div className="col-md-8 col-lg-7 col-xl-6">
@@ -17,7 +17,7 @@ const SignIn = () => {
             <div className="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
               <form className="">
                 <div className="d-flex align-items-center mb-3 pb-1">
-                  <MdOutlineHomeWork className="display-2 me-2" />
+                  <MdOutlineAddHomeWork className="display-2 me-2" />
 
                   <span className="h1 fw-bold mb-0">Welcome</span>
                 </div>
@@ -25,9 +25,18 @@ const SignIn = () => {
                   className="fw-normal mb-3 pb-3"
                   style={{ letterSpacing: 1 }}
                 >
-                  Sign into your account
+                  Create a new account
                 </h5>
-
+                <div className="form-outline mb-4">
+                  <input
+                    type="username"
+                    id="form1Example13"
+                    className="form-control form-control-lg"
+                  />
+                  <label className="form-label" htmlFor="form1Example13">
+                    Username
+                  </label>
+                </div>
                 {/* Email input */}
                 <div className="form-outline mb-4">
                   <input
@@ -56,14 +65,26 @@ const SignIn = () => {
                   type="submit"
                   className="btn btn-primary btn-lg btn-block"
                 >
-                  Sign Up
+                  Sign in
                 </button>
+                <div className="divider d-flex align-items-center my-4">
+                  <p className="text-center fw-bold mx-3 mb-0">OR</p>
+                </div>
 
-                <div className="text-center text-lg-start mt-4 pt-2">
+                <a
+                  className="btn btn-primary btn-lg btn-block"
+                  style={{ backgroundColor: "#55acee" }}
+                  href="#!"
+                  role="button"
+                >
+                  <FcGoogle className="me-2" />
+                  Continue with Google
+                </a>
+                <div className="text-center text-lg-start mt-2 pt-2">
                   <p className="small fw-bold mt-2 pt-1 mb-0">
-                    Don&apos;t have an account?
-                    <Link to="/signup" className="link-danger mx-2">
-                      Sign-Up
+                    Already have an account?
+                    <Link to="/signin" className="link-danger mx-2">
+                      Sign-In
                     </Link>
                   </p>
                 </div>
@@ -76,4 +97,4 @@ const SignIn = () => {
   );
 };
 
-export default SignIn;
+export default SignUp;
