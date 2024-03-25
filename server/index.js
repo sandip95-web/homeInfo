@@ -1,6 +1,7 @@
 const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
+const cors = require("cors");
 
 const authRoute = require("./routes/authRoutes");
 
@@ -9,7 +10,7 @@ const app = express();
 
 // Middleware
 app.use(express.json()); // Parse incoming JSON requests
-
+app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 // MongoDB Connection
 mongoose
   .connect(process.env.DB_URL)
@@ -20,11 +21,13 @@ mongoose
     console.error("Error connecting to MongoDB:", err);
   });
 // Routes
-app.use("/api/auth", authRoute);
+app.use("/auth", authRoute);
+
+
 app.use((err, req, res, next) => {
   const statusCode = err.statusCode || 500;
   const message = err.message || "Internal Server Error";
-  res.statusCode(statusCode).json({
+  res.status(statusCode).json({
     success: false,
     statusCode,
     message,

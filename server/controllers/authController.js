@@ -1,16 +1,15 @@
 const bcrypt = require("bcrypt");
-const User = require("../models/userModel"); // Assuming you have defined your User model in a separate file
+const User = require("../models/userModel");
+const errorHandler = require("../utils/errorHandler");
 
-const signup = async (req, res) => {
+const signup = async (req, res, next) => {
   const { username, email, password } = req.body;
 
   try {
     // Check if the username or email already exists
     const existingUser = await User.findOne({ $or: [{ username }, { email }] });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({ message: "Username or email already exists" });
+      next(errorHandler(400, "Username or Email Already Exist"));
     }
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
@@ -25,8 +24,7 @@ const signup = async (req, res) => {
     // Respond with success message
     res.status(201).json({ message: "User created successfully" });
   } catch (error) {
-    console.error("Error signing up:", error);
-    res.status(500).json({ message: "Internal Server Error" });
+    next(errorHandler(404, "Something Went Wrong Please Try Again"));
   }
 };
 

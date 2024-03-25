@@ -1,7 +1,42 @@
+import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { MdOutlineAddHomeWork } from "react-icons/md";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toast } from "react-toastify";
 const SignUp = () => {
+  const [formData, setFormData] = useState({});
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post("/auth/signup", formData);
+      const data = response.data;
+      if (data.success === false) {
+        toast.error(data.message);
+      } else {
+        toast.success("Sign up successful!");
+        // Redirect user or perform any other actions upon successful sign up
+        navigate("/");
+      }
+    } catch (error) {
+      toast.error("An error occurred while signing up.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <section className="vh-100 ">
@@ -15,7 +50,7 @@ const SignUp = () => {
               />
             </div>
             <div className="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-              <form className="">
+              <form onSubmit={handleSubmit}>
                 <div className="d-flex align-items-center mb-3 pb-1">
                   <MdOutlineAddHomeWork className="display-2 me-2" />
 
@@ -30,8 +65,9 @@ const SignUp = () => {
                 <div className="form-outline mb-4">
                   <input
                     type="username"
-                    id="form1Example13"
+                    id="username"
                     className="form-control form-control-lg"
+                    onChange={handleChange}
                   />
                   <label className="form-label" htmlFor="form1Example13">
                     Username
@@ -41,8 +77,9 @@ const SignUp = () => {
                 <div className="form-outline mb-4">
                   <input
                     type="email"
-                    id="form1Example13"
+                    id="email"
                     className="form-control form-control-lg"
+                    onChange={handleChange}
                   />
                   <label className="form-label" htmlFor="form1Example13">
                     Email address
@@ -52,8 +89,9 @@ const SignUp = () => {
                 <div className="form-outline mb-4">
                   <input
                     type="password"
-                    id="form1Example23"
+                    id="password"
                     className="form-control form-control-lg"
+                    onChange={handleChange}
                   />
                   <label className="form-label" htmlFor="form1Example23">
                     Password
@@ -62,10 +100,11 @@ const SignUp = () => {
 
                 {/* Submit button */}
                 <button
+                  disabled={loading}
                   type="submit"
                   className="btn btn-primary btn-lg btn-block"
                 >
-                  Sign in
+                  {loading ? "Loading..." : "Sign in"}
                 </button>
                 <div className="divider d-flex align-items-center my-4">
                   <p className="text-center fw-bold mx-3 mb-0">OR</p>

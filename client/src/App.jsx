@@ -7,12 +7,18 @@ import About from "./pages/About";
 import Header from "./components/Header";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SignUp from "./pages/SignUp";
+import axios from "axios";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
+axios.defaults.baseURL = "http://localhost:4000";
 
 function App() {
   return (
     <>
       <BrowserRouter>
         <Header />
+        <ToastContainer position="top-center" autoClose={3000} />
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/profile" element={<Profile />} />
