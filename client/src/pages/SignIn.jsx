@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
+  
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,15 +24,15 @@ const SignIn = () => {
       const response = await axios.post("/auth/signin", formData);
       const data = response.data;
 
-      if (data.success === false) {
-        setError(data.message);
-        toast.error(data.message);
-      } else {
+      if (data.success) {
         toast.success("Welcome!");
         navigate("/");
+      } else {
+        setError(data.message);
+        toast.error(data.message);
       }
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.response.data.message);
     } finally {
       setLoading(false);
     }
@@ -92,9 +92,10 @@ const SignIn = () => {
                 {/* Submit button */}
                 <button
                   type="submit"
+                  disabled={loading}
                   className="btn btn-primary btn-lg btn-block"
                 >
-                  Sign Up
+                  {loading ? "Loading..." : "Sign Up"}
                 </button>
 
                 <div className="text-center text-lg-start mt-4 pt-2">

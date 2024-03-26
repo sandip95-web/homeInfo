@@ -8,10 +8,11 @@ const sendToken = (user, statusCode, res) => {
     ),
     httpOnly: true,
   };
+  const { password: pass, ...rest } = user._doc;;
 
   res.status(statusCode).cookie("token", token, options).json({
     success: true,
-    user,
+    rest,
     token,
   });
 };
