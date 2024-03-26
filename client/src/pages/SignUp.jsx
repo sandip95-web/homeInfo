@@ -6,7 +6,6 @@ import axios from "axios";
 import { toast } from "react-toastify";
 const SignUp = () => {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -24,16 +23,15 @@ const SignUp = () => {
       const response = await axios.post("/auth/signup", formData);
       const data = response.data;
 
-      if (data.success === false) {
-        setError(data.message);
-        toast.error(data.message);
-      } else {
+      if (data.success) {
         toast.success("Sign up successful!");
         // Redirect user or perform any other actions upon successful sign up
-        navigate("/");
+        navigate("/signin");
+      } else {
+        toast.error(data.message);
       }
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.response.data.message);
     } finally {
       setLoading(false);
     }
