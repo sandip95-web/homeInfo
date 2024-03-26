@@ -1,31 +1,42 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 const errorHandler = require("../utils/errorHandler");
+const catchAysncError = require("../middleware/catchAysncError");
+const ErrorHandler = require("../utils/errorHandler");
+const sendToken = require("../utils/JWTtoken");
 
-const signup = async (req, res, next) => {
+exports.signup = catchAysncError(async (req, res, next) => {
   const { username, email, password } = req.body;
 
-  try {
-    // Check if the username or email already exists
-    const existingUser = await User.findOne({ $or: [{ username }, { email }] });
-    if (existingUser) {
-      next(errorHandler(400, "Username or Email Already Exist"));
-    }
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({
-      username,
-      email,
-      password: hashedPassword,
-    });
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const newUser = new User({
+    username,
+    email,
+    password: hashedPassword,
+  });
 
-    // Save the user to the database
-    await newUser.save();
+  // Save the user to the database
+  await newUser.save();
 
-    // Respond with success message
-    res.status(201).json({ message: "User created successfully" });
-  } catch (error) {
-    next(errorHandler(404, "Something Went Wrong Please Try Again"));
+  // Respond with success message
+  res.status(201).json({ message: "User created successfully" });
+});
+
+exports.signin = catchAysncError(async (req, res, next) => {
+  const { email, password } = req.body;
+  
+
+  if (!email || !password) {
+    return next(new ErrorHandler("Please Enter Email and Password", 400));
   }
-};
+  const user = await User.findOne({ email }).select("+password");
+  if (!user) {
+    return next(new ErrorHandler("Invalid Email Or Password", 401));
+  }
+  const isPasswordMatched = await user.comparePassword(password);
+  if (!isPasswordMatched) {
+    return next(new ErrorHandler("Invalid email or password", 401));
+  }
 
-module.exports = { signup };
+  sendToken(user, 200, res);
+});

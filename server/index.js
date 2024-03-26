@@ -2,7 +2,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
-
+const errorMiddleWare=require("./middleware/error");
 const authRoute = require("./routes/authRoutes");
 
 dotenv.config();
@@ -23,16 +23,7 @@ mongoose
 // Routes
 app.use("/auth", authRoute);
 
-
-app.use((err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
-  const message = err.message || "Internal Server Error";
-  res.status(statusCode).json({
-    success: false,
-    statusCode,
-    message,
-  });
-});
+app.use(errorMiddleWare);
 
 // Start the server
 const PORT = process.env.PORT || 3000; // Default to port 3000 if PORT environment variable is not set

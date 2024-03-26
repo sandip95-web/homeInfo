@@ -1,7 +1,43 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { MdOutlineHomeWork } from "react-icons/md";
+import axios from "axios";
+import { useState } from "react";
+import { toast } from "react-toastify";
 
 const SignIn = () => {
+  const [formData, setFormData] = useState({});
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.id]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post("/auth/signin", formData);
+      const data = response.data;
+
+      if (data.success === false) {
+        setError(data.message);
+        toast.error(data.message);
+      } else {
+        toast.success("Welcome!");
+        navigate("/");
+      }
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div>
       <section className="vh-2  00 ">
@@ -15,7 +51,7 @@ const SignIn = () => {
               />
             </div>
             <div className="col-md-7 col-lg-5 col-xl-5 offset-xl-1">
-              <form className="">
+              <form onSubmit={handleSubmit}>
                 <div className="d-flex align-items-center mb-3 pb-1">
                   <MdOutlineHomeWork className="display-2 me-2" />
 
@@ -32,8 +68,9 @@ const SignIn = () => {
                 <div className="form-outline mb-4">
                   <input
                     type="email"
-                    id="form1Example13"
+                    id="email"
                     className="form-control form-control-lg"
+                    onChange={handleChange}
                   />
                   <label className="form-label" htmlFor="form1Example13">
                     Email address
@@ -43,8 +80,9 @@ const SignIn = () => {
                 <div className="form-outline mb-4">
                   <input
                     type="password"
-                    id="form1Example23"
+                    id="password"
                     className="form-control form-control-lg"
+                    onChange={handleChange}
                   />
                   <label className="form-label" htmlFor="form1Example23">
                     Password
