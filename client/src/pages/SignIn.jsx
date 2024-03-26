@@ -3,12 +3,17 @@ import { MdOutlineHomeWork } from "react-icons/md";
 import axios from "axios";
 import { useState } from "react";
 import { toast } from "react-toastify";
-
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInFailure,
+  singInStart,
+  singInSuccess,
+} from "../redux/user/userSlice";
 const SignIn = () => {
   const [formData, setFormData] = useState({});
-  
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({
@@ -19,22 +24,22 @@ const SignIn = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch(singInStart());
     try {
       const response = await axios.post("/auth/signin", formData);
       const data = response.data;
 
       if (data.success) {
+        dispatch(singInSuccess(data));
         toast.success("Welcome!");
         navigate("/");
       } else {
-        setError(data.message);
+        dispatch(signInFailure(data.message));
         toast.error(data.message);
       }
     } catch (err) {
+      dispatch(signInFailure(err.response.data.message));
       toast.error(err.response.data.message);
-    } finally {
-      setLoading(false);
     }
   };
 

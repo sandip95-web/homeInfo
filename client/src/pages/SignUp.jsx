@@ -1,13 +1,20 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { MdOutlineAddHomeWork } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  signInFailure,
+  singInStart,
+  singInSuccess,
+} from "../redux/user/userSlice";
 const SignUp = () => {
   const [formData, setFormData] = useState({});
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const handleChange = (e) => {
     setFormData({
@@ -18,22 +25,23 @@ const SignUp = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
+    dispatch(singInStart());
     try {
       const response = await axios.post("/auth/signup", formData);
       const data = response.data;
 
       if (data.success) {
+        singInSuccess(data);
         toast.success("Sign up successful!");
         // Redirect user or perform any other actions upon successful sign up
         navigate("/signin");
       } else {
+        dispatch(signInFailure(data.message));
         toast.error(data.message);
       }
     } catch (err) {
+      dispatch(signInFailure(err.response.data.message));
       toast.error(err.response.data.message);
-    } finally {
-      setLoading(false);
     }
   };
 
