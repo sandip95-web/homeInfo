@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+
 import { MdOutlineAddHomeWork } from "react-icons/md";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
@@ -10,6 +10,7 @@ import {
   singInStart,
   singInSuccess,
 } from "../redux/user/userSlice";
+import OAUth from "../components/OAUth";
 const SignUp = () => {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
@@ -117,16 +118,7 @@ const SignUp = () => {
                 <div className="divider d-flex align-items-center my-4">
                   <p className="text-center fw-bold mx-3 mb-0">OR</p>
                 </div>
-
-                <a
-                  className="btn btn-primary btn-lg btn-block"
-                  style={{ backgroundColor: "#55acee" }}
-                  href="#!"
-                  role="button"
-                >
-                  <FcGoogle className="me-2" />
-                  Continue with Google
-                </a>
+                <OAUth/>
                 <div className="text-center text-lg-start mt-2 pt-2">
                   <p className="small fw-bold mt-2 pt-1 mb-0">
                     Already have an account?

@@ -24,7 +24,6 @@ exports.signup = catchAysncError(async (req, res, next) => {
 
 exports.signin = catchAysncError(async (req, res, next) => {
   const { email, password } = req.body;
-  
 
   if (!email || !password) {
     return next(new ErrorHandler("Please Enter Email and Password", 400));
@@ -39,4 +38,28 @@ exports.signin = catchAysncError(async (req, res, next) => {
   }
 
   sendToken(user, 200, res);
+});
+
+exports.google = catchAysncError(async (req, res, next) => {
+  const user = await User.findOne({ email: req.body.email });
+  if (user) {
+    sendToken(user, 200, res);
+  } else {
+    const generatedPassword =
+      Math.random().toString(36).slice(-8) +
+      Math.random().toString(36).slice(-8);
+    const hashedPassword = bcrypt.hashSync(generatedPassword, 10);
+    const newUsername =
+      req.body.name.split(" ").join("").toLowerCase() +
+      Math.random().toString(36).slice(-8);
+
+    const newUser = await User({
+      username:newUsername,
+      email: req.body.email,
+      password: hashedPassword,
+      avatar: req.body.photo,
+    });
+    await newUser.save();
+    sendToken(newUser, 200, res);
+  }
 });

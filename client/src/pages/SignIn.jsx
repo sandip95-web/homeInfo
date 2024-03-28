@@ -9,6 +9,7 @@ import {
   singInStart,
   singInSuccess,
 } from "../redux/user/userSlice";
+import OAUth from "../components/OAUth";
 const SignIn = () => {
   const [formData, setFormData] = useState({});
   const { loading, error } = useSelector((state) => state.user);
@@ -102,7 +103,9 @@ const SignIn = () => {
                 >
                   {loading ? "Loading..." : "Sign Up"}
                 </button>
-
+                <br />
+                <br />
+                <OAUth />
                 <div className="text-center text-lg-start mt-4 pt-2">
                   <p className="small fw-bold mt-2 pt-1 mb-0">
                     Don&apos;t have an account?
