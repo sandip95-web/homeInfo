@@ -11,8 +11,12 @@ import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
+import { useSelector } from "react-redux";
 
 function Header() {
+  const currentUser = useSelector((state) => state.user.currentUser);
+  console.log(currentUser);
+
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
       <Container fluid>
@@ -21,28 +25,7 @@ function Header() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
-          <Nav
-            className="mx-auto my-2 my-lg-0"
-            style={{ maxHeight: "100px" }}
-            navbarScroll
-          >
-            <Nav.Link href="/" className="text-dark">
-              <BiHome className="me-1" /> Home
-            </Nav.Link>
-            <Nav.Link href="/about" className="text-dark">
-              <BiInfoCircle className="me-1" /> About
-            </Nav.Link>
-            <Nav.Link href="/profile" className="text-dark">
-              <BiUser className="me-1" /> Profile
-            </Nav.Link>
-            <Nav.Link href="/signin" className="text-dark">
-              <BiLogIn className="me-1" /> Sign-In
-            </Nav.Link>
-            <Nav.Link href="/signup" className="text-dark">
-              <BiUserPlus className="me-1" /> Sign-Up
-            </Nav.Link>
-          </Nav>
-          <Form className="d-flex">
+          <Form className="d-flex mx-auto w-50">
             <Form.Control
               type="search"
               placeholder="Search"
@@ -53,6 +36,33 @@ function Header() {
               <RiSearchLine />
             </Button>
           </Form>
+          <Nav
+            className="mx-auto my-2 my-lg-0 d-flex justify-content-center align-items-center"
+            style={{ maxHeight: "100px" }}
+            navbarScroll
+          >
+            <Nav.Link href="/" className="text-dark">
+              <BiHome className="me-1" /> Home
+            </Nav.Link>
+            <Nav.Link href="/about" className="text-dark">
+              <BiInfoCircle className="me-1" /> About
+            </Nav.Link>
+
+            {currentUser && currentUser.avatar ? (
+              <Nav.Link href="/profile" className="text-dark">
+                <img
+                  src={currentUser.avatar}
+                  className="rounded-circle"
+                  style={{ width: "40px", height: "40px" }}
+                  alt="profile"
+                />
+              </Nav.Link>
+            ) : (
+              <Nav.Link href="/signin" className="text-dark">
+                <BiLogIn className="me-1" /> Sign-In
+              </Nav.Link>
+            )}
+          </Nav>
         </Navbar.Collapse>
       </Container>
     </Navbar>
