@@ -1,6 +1,5 @@
 const sendToken = (user, statusCode, res) => {
   const token = user.getJWTToken();
-
   // options for cookie
   const options = {
     expires: new Date(
@@ -10,7 +9,11 @@ const sendToken = (user, statusCode, res) => {
   };
   const { password: pass, ...rest } = user._doc;
 
-  res.status(statusCode).cookie("token", token, options).json(rest);
+  res.status(statusCode).cookie("token", token, options).json({
+    success: true,
+    user,
+    token,
+  });
 };
 
 module.exports = sendToken;

@@ -28,9 +28,11 @@ const SignIn = () => {
     dispatch(singInStart());
     try {
       const response = await axios.post("/auth/signin", formData);
-      const data = response.data;
-
-      if (data.success) {
+      const data = response.data.user;
+      console.log("====================================");
+      console.log(data);
+      console.log("====================================");
+      if (response.status === 200) {
         dispatch(singInSuccess(data));
         toast.success("Welcome!");
         navigate("/");

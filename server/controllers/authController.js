@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
-const errorHandler = require("../utils/errorHandler");
 const catchAysncError = require("../middleware/catchAysncError");
 const ErrorHandler = require("../utils/errorHandler");
 const sendToken = require("../utils/JWTtoken");

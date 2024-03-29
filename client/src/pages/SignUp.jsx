@@ -31,7 +31,7 @@ const SignUp = () => {
       const response = await axios.post("/auth/signup", formData);
       const data = response.data;
 
-      if (data.success) {
+      if (response.status === 200) {
         singInSuccess(data);
         toast.success("Sign up successful!");
         // Redirect user or perform any other actions upon successful sign up
@@ -118,7 +118,7 @@ const SignUp = () => {
                 <div className="divider d-flex align-items-center my-4">
                   <p className="text-center fw-bold mx-3 mb-0">OR</p>
                 </div>
-                <OAUth/>
+                <OAUth />
                 <div className="text-center text-lg-start mt-2 pt-2">
                   <p className="small fw-bold mt-2 pt-1 mb-0">
                     Already have an account?

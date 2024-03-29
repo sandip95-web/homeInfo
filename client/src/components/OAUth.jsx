@@ -9,16 +9,13 @@ import { useNavigate } from "react-router-dom";
 
 const OAUth = () => {
   const dispatch = useDispatch();
-  const navigate= useNavigate();
+  const navigate = useNavigate();
 
   const handleGoogleClick = async () => {
     try {
       const provider = new GoogleAuthProvider();
       const auth = getAuth(app);
       const result = await signInWithPopup(auth, provider);
-      console.log("====================================");
-      console.log(result);
-      console.log("====================================");
       const res = await axios.post("/auth/google", {
         name: result.user.displayName,
         email: result.user.email,
@@ -27,7 +24,7 @@ const OAUth = () => {
 
       const data = res.data;
       dispatch(singInSuccess(data));
-    navigate("/")
+      navigate("/");
     } catch (error) {
       console.log(error);
       toast.error("Could not Sign in With google Account: ", error);
