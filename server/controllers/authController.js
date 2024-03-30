@@ -29,8 +29,9 @@ exports.signin = catchAysncError(async (req, res, next) => {
   }
   const user = await User.findOne({ email }).select("+password");
   if (!user) {
-    return next(new ErrorHandler("Invalid Email Or Password", 401));
+    return next(new ErrorHandler("Inva  lid Email Or Password", 401));
   }
+  console.log("User found:", user);
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid email or password", 401));
@@ -40,7 +41,9 @@ exports.signin = catchAysncError(async (req, res, next) => {
 });
 
 exports.google = catchAysncError(async (req, res, next) => {
-  const user = await User.findOne({ email: req.body.email });
+  const user = await User.findOne({ email: req.body.email }).select(
+    "+password"
+  );
   if (user) {
     sendToken(user, 200, res);
   } else {
@@ -53,7 +56,7 @@ exports.google = catchAysncError(async (req, res, next) => {
       Math.random().toString(36).slice(-8);
 
     const newUser = await User({
-      username:newUsername,
+      username: newUsername,
       email: req.body.email,
       password: hashedPassword,
       avatar: req.body.photo,

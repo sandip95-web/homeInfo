@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/PrivateRoute";
 
 axios.defaults.baseURL = "http://localhost:4000";
+axios.defaults.withCredentials = true;
 
 function App() {
   return (
@@ -22,7 +23,7 @@ function App() {
         <ToastContainer position="top-center" autoClose={3000} />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route element={<PrivateRoute/>}>
+          <Route element={<PrivateRoute />}>
             <Route path="/profile" element={<Profile />} />
           </Route>
           <Route path="/signin" element={<SignIn />} />

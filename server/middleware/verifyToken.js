@@ -4,7 +4,7 @@ const catchAysncError = require("./catchAysncError");
 
 exports.verifyToken = catchAysncError(async (req, res, next) => {
   const token = req.cookies.token;
-
+  console.log(token);
   if (!token) {
     next(new ErrorHandler("Please Login to access this resource", 401));
   }
@@ -15,7 +15,7 @@ exports.verifyToken = catchAysncError(async (req, res, next) => {
           new ErrorHandler("Token expired. Please log in again.", 401)
         );
       }
-      return next(new ErrorHandler("Forbidden", 403));
+      return next(new ErrorHandler(err.message, 403));
     }
     req.user = user; // Set user only if token is valid
     next();

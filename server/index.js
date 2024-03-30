@@ -2,17 +2,24 @@ const express = require("express");
 const dotenv = require("dotenv");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const cookieParser = require("cookie-parser");
 const errorMiddleWare = require("./middleware/error");
+
 const authRoute = require("./routes/authRoutes");
 const userRoute = require("./routes/userRoutes");
-const cookieParser = require("cookie-parser");
 
 dotenv.config();
 const app = express();
 
 // Middleware
 app.use(express.json()); // Parse incoming JSON requests
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(cookieParser());
 // MongoDB Connection
 mongoose

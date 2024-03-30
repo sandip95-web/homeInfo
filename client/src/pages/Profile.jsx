@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   getDownloadURL,
   getStorage,
@@ -8,6 +8,14 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../utils/firebase";
+import {
+  UpdateUserStart,
+  updateUserFailure,
+  updateUserSuccess,
+} from "../redux/user/userSlice";
+import axios from "axios";
+import { toast } from "react-toastify";
+
 const Profile = () => {
   const currentUser = useSelector((state) => state.user.currentUser);
   const fileRef = useRef(null);
@@ -15,6 +23,8 @@ const Profile = () => {
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
+
+  const dispatch = useDispatch();
 
   useEffect(() => {
     if (file) {
@@ -45,6 +55,32 @@ const Profile = () => {
         });
       }
     );
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    dispatch(UpdateUserStart());
+    try {
+      const response = await axios.patch(
+        `/user/update/${currentUser._id}`,
+        formData
+      );
+      const data = response.data;
+      if (response.status === 200) {
+        dispatch(updateUserSuccess(data));
+        toast.success("Profile Updated Successfully");
+      } else {
+        dispatch(updateUserFailure(data.message));
+        toast.error(data.message);
+      }
+    } catch (error) {
+      dispatch(updateUserFailure(error.response.data.message));
+      toast.error(error.response.data.message);
+    }
   };
   return (
     <Container>
@@ -90,13 +126,14 @@ const Profile = () => {
               )}
             </p>
           </div>
-          <Form className="px-4 py-3 border rounded">
+          <Form className="px-4 py-3 border rounded" onSubmit={handleSubmit}>
             <Form.Group className="mb-3" controlId="formUsername">
               <Form.Label>Username</Form.Label>
               <Form.Control
                 type="text"
                 defaultValue={currentUser.username}
-                disabled
+                name="username"
+                onChange={handleChange}
               />
             </Form.Group>
 
@@ -104,14 +141,20 @@ const Profile = () => {
               <Form.Label>Email address</Form.Label>
               <Form.Control
                 type="email"
+                name="email"
                 defaultValue={currentUser.email}
-                disabled
+                onChange={handleChange}
               />
             </Form.Group>
 
             <Form.Group className="mb-3" controlId="formPassword">
               <Form.Label>Password</Form.Label>
-              <Form.Control type="password" placeholder="Password" />
+              <Form.Control
+                type="password"
+                onChange={handleChange}
+                name="password"
+                placeholder="Password"
+              />
             </Form.Group>
 
             <div className="d-grid">
