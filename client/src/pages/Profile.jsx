@@ -9,6 +9,8 @@ import {
 } from "firebase/storage";
 import { app } from "../utils/firebase";
 import {
+  SignOutUserStart,
+  SignOutUserSuccess,
   UpdateUserStart,
   deleteUserStart,
   deleteUserSuccess,
@@ -90,13 +92,32 @@ const Profile = () => {
   const handleDelete = async () => {
     try {
       dispatch(deleteUserStart());
-      const response = await axios.delete(`/user/delete/${currentUser.user._id}`);
+      const response = await axios.delete(
+        `/user/delete/${currentUser.user._id}`
+      );
       const data = response.data;
       if (response.status === 200) {
         dispatch(deleteUserSuccess());
         toast.success("Profile Deleted Successfully");
       } else {
         toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      dispatch(SignOutUserStart());
+      const response = await axios.post("/user/signout");
+      const data = response.data;
+      if (response.status === 200) {
+        toast.success(data.message);
+        dispatch(SignOutUserSuccess());
+      } else {
+        toast.error(data.message);
+        return;
       }
     } catch (error) {
       toast.error(error.response.data.message);
@@ -196,7 +217,9 @@ const Profile = () => {
             </Button>
           </div>
           <div className="d-grid mt-3">
-            <Button variant="secondary">Sign Out</Button>
+            <Button variant="secondary" onClick={handleSignOut}>
+              Sign Out
+            </Button>
           </div>
         </Col>
       </Row>
