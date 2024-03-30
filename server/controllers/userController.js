@@ -28,3 +28,16 @@ exports.updateUser = catchAysncError(async (req, res, next) => {
   const { password, ...rest } = updatedUser._doc;
   res.status(200).json(rest);
 });
+
+exports.deleteUser = catchAysncError(async (req, res, next) => {
+  console.log(req.user.id);
+  console.log(req.params.id);
+  if (req.user.id !== req.params.id) {
+    next(new ErrorHandler("You can only delete your account", 403));
+  }
+  const deleteUser = await User.findByIdAndDelete(req.params.id);
+  res.clearCookie("token");
+  res
+    .status(200)
+    .json({ success: true, message: "User Deleted Successfully!" });
+});

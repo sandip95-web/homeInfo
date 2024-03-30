@@ -10,6 +10,8 @@ import {
 import { app } from "../utils/firebase";
 import {
   UpdateUserStart,
+  deleteUserStart,
+  deleteUserSuccess,
   updateUserFailure,
   updateUserSuccess,
 } from "../redux/user/userSlice";
@@ -17,13 +19,15 @@ import axios from "axios";
 import { toast } from "react-toastify";
 
 const Profile = () => {
-  const currentUser = useSelector((state) => state.user.currentUser);
+  const { currentUser, loading } = useSelector((state) => state.user);
   const fileRef = useRef(null);
   const [file, setFile] = useState(undefined);
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-
+  console.log("====================================");
+  console.log(currentUser);
+  console.log("====================================");
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -66,7 +70,7 @@ const Profile = () => {
     dispatch(UpdateUserStart());
     try {
       const response = await axios.patch(
-        `/user/update/${currentUser._id}`,
+        `/user/update/${currentUser.user._id}`,
         formData
       );
       const data = response.data;
@@ -82,6 +86,23 @@ const Profile = () => {
       toast.error(error.response.data.message);
     }
   };
+
+  const handleDelete = async () => {
+    try {
+      dispatch(deleteUserStart());
+      const response = await axios.delete(`/user/delete/${currentUser.user._id}`);
+      const data = response.data;
+      if (response.status === 200) {
+        dispatch(deleteUserSuccess());
+        toast.success("Profile Deleted Successfully");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.response.data.message);
+    }
+  };
+
   return (
     <Container>
       <Row className="mt-5">
@@ -102,7 +123,7 @@ const Profile = () => {
           />
           <div className="text-center">
             <img
-              src={formData.avatar || currentUser.avatar}
+              src={formData.avatar || currentUser.user.avatar}
               alt="profile"
               onClick={() => fileRef.current.click()}
               className="rounded-circle mb-3"
@@ -131,7 +152,7 @@ const Profile = () => {
               <Form.Label>Username</Form.Label>
               <Form.Control
                 type="text"
-                defaultValue={currentUser.username}
+                defaultValue={currentUser.user.username}
                 name="username"
                 onChange={handleChange}
               />
@@ -142,7 +163,7 @@ const Profile = () => {
               <Form.Control
                 type="email"
                 name="email"
-                defaultValue={currentUser.email}
+                defaultValue={currentUser.user.email}
                 onChange={handleChange}
               />
             </Form.Group>
@@ -159,7 +180,7 @@ const Profile = () => {
 
             <div className="d-grid">
               <Button variant="primary" type="submit">
-                Update
+                {loading ? "Loading..." : "Update"}
               </Button>
             </div>
           </Form>
@@ -169,29 +190,19 @@ const Profile = () => {
               Create Listing
             </Button>
           </div>
+          <div className="d-grid mt-3">
+            <Button variant="danger" onClick={handleDelete}>
+              Delete Account
+            </Button>
+          </div>
+          <div className="d-grid mt-3">
+            <Button variant="secondary">Sign Out</Button>
+          </div>
         </Col>
       </Row>
       <Row className="justify-content-center mt-3">
         <Col md={6}>
           <div className="d-flex justify-content-lg-between">
-            <a
-              href="/delete-account"
-              className="me-2 text-decoration-none text-danger"
-            >
-              Delete Account
-            </a>
-            <a
-              href="/sign-out"
-              className="me-2 text-decoration-none text-danger"
-            >
-              Sign Out
-            </a>
-          </div>
-        </Col>
-      </Row>
-      <Row className="justify-content-center mt-5">
-        <Col md={6}>
-          <div className="text-center">
             <a
               href="/show-listing"
               className="text-decoration-none text-success"

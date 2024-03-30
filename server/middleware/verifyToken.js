@@ -4,7 +4,6 @@ const catchAysncError = require("./catchAysncError");
 
 exports.verifyToken = catchAysncError(async (req, res, next) => {
   const token = req.cookies.token;
-  console.log(token);
   if (!token) {
     next(new ErrorHandler("Please Login to access this resource", 401));
   }

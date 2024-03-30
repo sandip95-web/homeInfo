@@ -1,10 +1,4 @@
-import {
-  BiHome,
-  BiInfoCircle,
-  BiUser,
-  BiLogIn,
-  BiUserPlus,
-} from "react-icons/bi";
+import { BiHome, BiInfoCircle, BiLogIn } from "react-icons/bi";
 import { RiSearchLine } from "react-icons/ri";
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
@@ -14,10 +8,8 @@ import Navbar from "react-bootstrap/Navbar";
 import { useSelector } from "react-redux";
 
 function Header() {
-  const currentUser = useSelector((state) => state.user.currentUser);
-  console.log("====================================");
+  const { currentUser } = useSelector((state) => state.user);
   console.log(currentUser);
-  console.log("====================================");
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
@@ -50,10 +42,10 @@ function Header() {
               <BiInfoCircle className="me-1" /> About
             </Nav.Link>
 
-            {currentUser && currentUser.avatar ? (
+            {currentUser && currentUser.user.avatar ? (
               <Nav.Link href="/profile" className="text-dark">
                 <img
-                  src={currentUser.avatar}
+                  src={currentUser.user.avatar}
                   className="rounded-circle"
                   style={{ width: "40px", height: "40px" }}
                   alt="profile"
