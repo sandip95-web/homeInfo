@@ -7,6 +7,7 @@ const errorMiddleWare = require("./middleware/error");
 
 const authRoute = require("./routes/authRoutes");
 const userRoute = require("./routes/userRoutes");
+const listingRoute = require("./routes/listingRoutes");
 
 dotenv.config();
 const app = express();
@@ -33,6 +34,7 @@ mongoose
 // Routes
 app.use("/auth", authRoute);
 app.use("/user", userRoute);
+app.use("/listing", listingRoute);
 
 app.use(errorMiddleWare);
 
