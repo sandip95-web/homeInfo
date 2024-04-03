@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import {
   getDownloadURL,
@@ -7,10 +7,18 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../utils/firebase";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import {useNavigate} from 'react-router-dom';
+
 const CreateListing = () => {
   const [file, setFile] = useState([]);
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const { currentUser } = useSelector((state) => state.user);
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     name: "",
@@ -22,24 +30,68 @@ const CreateListing = () => {
     bathrooms: 0,
     furnished: false,
     parking: false,
-    type: "",
+    rent: false,
+    type: "rent",
     offer: false,
     imageUrls: [],
     sell: false, // Newly added field
   });
 
-  const handleSubmit = (e) => {
+  console.log("====================================");
+  console.log(formData);
+  console.log("====================================");
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (formData.imageUrls.length < 0) {
+      return setError("You must upload at least one image");
+    }
+    if (+formData.regularPrice < +formData.discountPrice) {
+      return setError("Discount Price should be less than Regular Price");
+    }
+    try {
+      setLoading(true);
+      setError(false);
+      const response = await axios.post("/listing/create", {
+        ...formData,
+        userRef: currentUser.user._id,
+      });
+
+      const data = response.data;
+      setLoading(false);
+      if (response.status !== 200) {
+        setError(data.message);
+      }
+      navigate(`/listing/${data._id}`);
+    } catch (error) {
+      setError(error.message);
+      setLoading(false);
+    }
     // Handle form submission, e.g., send data to backend
-    console.log(formData);
   };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: type === "checkbox" ? checked : value,
-    }));
+    const { id, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      setFormData({
+        ...formData,
+        [id]: checked,
+      });
+    } else if (id === "type") {
+      setFormData({
+        ...formData,
+        type: value,
+      });
+    } else if (type === "number") {
+      setFormData({
+        ...formData,
+        [id]: parseFloat(value),
+      });
+    } else {
+      setFormData({
+        ...formData,
+        [id]: value,
+      });
+    }
   };
 
   const handleImageSubmit = () => {
@@ -103,6 +155,7 @@ const CreateListing = () => {
       imageUrls: formData.imageUrls.filter((_, i) => i !== index),
     });
   };
+
   return (
     <Container className="my-5">
       <h1 className="text-center mb-4">Create A Listing</h1>
@@ -116,6 +169,19 @@ const CreateListing = () => {
                 placeholder="Enter name"
                 name="name"
                 value={formData.name}
+                onChange={handleChange}
+                required
+              />
+            </Form.Group>
+          </Col>
+          <Col>
+            <Form.Group controlId="address">
+              <Form.Label>Address</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter address"
+                name="address"
+                value={formData.address}
                 onChange={handleChange}
                 required
               />
@@ -165,19 +231,21 @@ const CreateListing = () => {
               />
             </Form.Group>
           </Col>
-          <Col>
-            <Form.Group controlId="discountPrice">
-              <Form.Label>Discount Price</Form.Label>
-              <Form.Control
-                type="number"
-                placeholder="Enter discount price"
-                name="discountPrice"
-                value={formData.discountPrice}
-                onChange={handleChange}
-                required
-              />
-            </Form.Group>
-          </Col>
+          {formData.offer && (
+            <Col>
+              <Form.Group controlId="discountPrice">
+                <Form.Label>Discount Price</Form.Label>
+                <Form.Control
+                  type="number"
+                  placeholder="Enter discount price"
+                  name="discountPrice"
+                  value={formData.discountPrice}
+                  onChange={handleChange}
+                  required
+                />
+              </Form.Group>
+            </Col>
+          )}
         </Row>
 
         <Row className="mb-3">
@@ -239,15 +307,6 @@ const CreateListing = () => {
           />
         </Form.Group>
 
-        <Form.Group controlId="sell" className="mb-3">
-          <Form.Check
-            type="checkbox"
-            label="Sell"
-            name="sell"
-            checked={formData.sell}
-            onChange={handleChange}
-          />
-        </Form.Group>
         <Row className="mb-3">
           <Form.Label>Upload Image</Form.Label>
           <Col>
@@ -298,10 +357,15 @@ const CreateListing = () => {
         </Row>
 
         <div className="d-grid">
-          <Button variant="primary" type="submit">
-            CREATE LISTING
+          <Button
+            disabled={loading || uploading}
+            variant="primary"
+            type="submit"
+          >
+            {loading ? "Creating...." : "CREATE LISTING"}
           </Button>
         </div>
+        {error && <p className="text-danger">{error}</p>}
       </Form>
     </Container>
   );
