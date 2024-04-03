@@ -40,7 +40,4 @@ exports.deleteUser = catchAysncError(async (req, res, next) => {
     .json({ success: true, message: "User Deleted Successfully!" });
 });
 
-exports.signout = catchAysncError(async (req, res, next) => {
-  res.clearCookie("token");
-  res.status(200).json({ status: true, message: "Successfully Logged out!" });
-});
+

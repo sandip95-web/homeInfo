@@ -10,6 +10,6 @@ const router = express.Router();
 router
   .patch("/update/:id", verifyToken, updateUser)
   .delete("/delete/:id", verifyToken, deleteUser)
-  .post("/signout", verifyToken, signout);
+ 
 
 module.exports = router;

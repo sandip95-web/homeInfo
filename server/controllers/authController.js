@@ -65,3 +65,7 @@ exports.google = catchAysncError(async (req, res, next) => {
     sendToken(newUser, 200, res);
   }
 });
+exports.signout = catchAysncError(async (req, res, next) => {
+  res.clearCookie("token");
+  res.status(200).json({ status: true, message: "Successfully Logged out!" });
+});

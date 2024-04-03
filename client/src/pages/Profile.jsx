@@ -110,7 +110,7 @@ const Profile = () => {
   const handleSignOut = async () => {
     try {
       dispatch(SignOutUserStart());
-      const response = await axios.post("/user/signout");
+      const response = await axios.post("/auth/signout");
       const data = response.data;
       if (response.status === 200) {
         toast.success(data.message);
@@ -120,7 +120,7 @@ const Profile = () => {
         return;
       }
     } catch (error) {
-      toast.error(error.response.data.message);
+      toast.error(error);
     }
   };
 
@@ -207,7 +207,7 @@ const Profile = () => {
           </Form>
           <br />
           <div className="d-grid">
-            <Button variant="success" type="submit">
+            <Button variant="success" type="submit" href="/createlisting">
               Create Listing
             </Button>
           </div>
