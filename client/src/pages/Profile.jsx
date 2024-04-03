@@ -27,10 +27,11 @@ const Profile = () => {
   const [filePerc, setFilePerc] = useState(0);
   const [fileUploadError, setFileUploadError] = useState(false);
   const [formData, setFormData] = useState({});
-  console.log("====================================");
-  console.log(currentUser);
-  console.log("====================================");
+  const [showListingError, setShowListingError] = useState(false);
+  const [userListingData, setUserListingData] = useState(null);
   const dispatch = useDispatch();
+
+  console.log(userListingData);
 
   useEffect(() => {
     if (file) {
@@ -121,6 +122,24 @@ const Profile = () => {
       }
     } catch (error) {
       toast.error(error);
+    }
+  };
+
+  const handleShowListing = async () => {
+    try {
+      setShowListingError(false);
+      const response = await axios.get(`/user/listing/${currentUser.user._id}`);
+
+      const data = response.data;
+      console.log(data);
+      if (response.status !== 200) {
+        setShowListingError(data.message);
+        return;
+      }
+
+      setUserListingData(data);
+    } catch (error) {
+      setShowListingError("Error showing the list");
     }
   };
 
@@ -226,13 +245,60 @@ const Profile = () => {
       <Row className="justify-content-center mt-3">
         <Col md={6}>
           <div className="d-flex justify-content-lg-between">
-            <a
-              href="/show-listing"
-              className="text-decoration-none text-success"
+            <Button
+              type="button"
+              onClick={handleShowListing}
+              className="text-decoration-none text-light"
             >
               Show Listing
-            </a>
+            </Button>
+            {showListingError && (
+              <p className="text-danger">{showListingError}</p>
+            )}
           </div>
+        </Col>
+      </Row>
+      <Row className="justify-content-center mt-3">
+        <Col md={6}>
+          {userListingData && userListingData.length > 0 && (
+            <div>
+              {userListingData.map((listing, index) => (
+                <div key={index} className="card mb-3">
+                  <div className="row g-0">
+                    <div className="col-md-4">
+                      <img
+                        src={listing.imageUrls[0]}
+                        className="img-fluid rounded-start"
+                        alt="listing"
+                      />
+                    </div>
+                    <div className="col-md-8">
+                      <div className="card-body d-flex justify-content-between align-items-center">
+                        <div>
+                          <h5 className="card-title">{listing.name}</h5>
+                        </div>
+                        <div className="d-flex flex-column gap-2">
+                          <Button
+                            variant="danger"
+                            className="me-2"
+                            // onClick={() => handleDeleteListing(listing._id)}
+                          >
+                            Delete
+                          </Button>
+                          <Button
+                            variant="info"
+                            // onClick={() => handleEditListing(listing._id)}
+                          >
+                            Edit
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </Col>
       </Row>
     </Container>
