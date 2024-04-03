@@ -9,7 +9,7 @@ import {
 import { app } from "../utils/firebase";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 
 const CreateListing = () => {
   const [file, setFile] = useState([]);
@@ -18,7 +18,7 @@ const CreateListing = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -66,7 +66,6 @@ const CreateListing = () => {
       setError(error.message);
       setLoading(false);
     }
-    // Handle form submission, e.g., send data to backend
   };
 
   const handleChange = (e) => {

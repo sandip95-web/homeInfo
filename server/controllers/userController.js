@@ -2,7 +2,7 @@ const catchAysncError = require("../middleware/catchAysncError");
 const User = require("../models/userModel");
 const ErrorHandler = require("../utils/errorHandler");
 const bcrypt = require("bcrypt");
-
+const Listing = require("../models/listingModel");
 exports.updateUser = catchAysncError(async (req, res, next) => {
   if (req.user.id !== req.params.id) {
     next(
@@ -40,4 +40,10 @@ exports.deleteUser = catchAysncError(async (req, res, next) => {
     .json({ success: true, message: "User Deleted Successfully!" });
 });
 
-
+exports.getUserListing = catchAysncError(async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    next(new ErrorHandler("You can only view your own listing only"));
+  }
+  const listing = await Listing.find({ userRef: req.params.id });
+  res.status(200).json(listing)
+});
