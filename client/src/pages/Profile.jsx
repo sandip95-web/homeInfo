@@ -31,8 +31,7 @@ const Profile = () => {
   const [userListingData, setUserListingData] = useState(null);
   const dispatch = useDispatch();
 
-  console.log(userListingData);
-
+  console.log(currentUser.user.avatar);
   useEffect(() => {
     if (file) {
       handleFileUpload(file);
@@ -140,6 +139,22 @@ const Profile = () => {
       setUserListingData(data);
     } catch (error) {
       setShowListingError("Error showing the list");
+    }
+  };
+
+  const handleDeleteListing = async (listingId) => {
+    try {
+      const response = await axios.delete(`/listing/delete/${listingId}`);
+      const data = response.data;
+      if (response.status === 200) {
+        console.log(data.message);
+        setUserListingData((prev) => {
+          prev.filter((listing) => listing._id !== listingId);
+        });
+        toast.success("Listing Deleted Successfully");
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
@@ -281,7 +296,7 @@ const Profile = () => {
                           <Button
                             variant="danger"
                             className="me-2"
-                            // onClick={() => handleDeleteListing(listing._id)}
+                            onClick={() => handleDeleteListing(listing._id)}
                           >
                             Delete
                           </Button>

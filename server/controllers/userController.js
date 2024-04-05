@@ -42,7 +42,7 @@ exports.deleteUser = catchAysncError(async (req, res, next) => {
 
 exports.getUserListing = catchAysncError(async (req, res, next) => {
   if (req.user.id !== req.params.id) {
-    next(new ErrorHandler("You can only view your own listing only"));
+    next(new ErrorHandler("You can only view your own listing only",403));
   }
   const listing = await Listing.find({ userRef: req.params.id });
   res.status(200).json(listing)

@@ -31,7 +31,7 @@ exports.signin = catchAysncError(async (req, res, next) => {
   if (!user) {
     return next(new ErrorHandler("Inva  lid Email Or Password", 401));
   }
-  console.log("User found:", user);
+  
   const isPasswordMatched = await user.comparePassword(password);
   if (!isPasswordMatched) {
     return next(new ErrorHandler("Invalid email or password", 401));
