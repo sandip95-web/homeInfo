@@ -20,3 +20,22 @@ exports.deleteListing = catchAysncError(async (req, res, next) => {
     .status(200)
     .json({ success: true, message: "Listing deleted successfully" });
 });
+
+exports.updateListing = catchAysncError(async (req, res, next) => {
+  const listing = await Listing.findById(req.params.id);
+
+  if (!listing) {
+    return next(errorHandler("Listing not found", 404));
+  }
+  if (req.user.id !== listing.userRef) {
+    return next(errorHandler("You can only delete your own listings", 401));
+  }
+  const updateListing = await Listing.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
+  res
+    .status(200)
+    .json({ success: true, message: "Listing deleted successfully" });
+});
