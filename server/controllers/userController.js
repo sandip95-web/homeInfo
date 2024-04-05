@@ -47,3 +47,7 @@ exports.getUserListing = catchAysncError(async (req, res, next) => {
   const listing = await Listing.find({ userRef: req.params.id });
   res.status(200).json(listing)
 });
+
+
+
+

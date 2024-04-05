@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, Button, Container, Row, Col } from "react-bootstrap";
 import {
   getDownloadURL,
@@ -9,9 +9,9 @@ import {
 import { app } from "../utils/firebase";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
-const CreateListing = () => {
+const UpdateListing = () => {
   const [file, setFile] = useState([]);
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -19,6 +19,7 @@ const CreateListing = () => {
   const [error, setError] = useState(false);
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
+  const { id } = useParams();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -37,7 +38,19 @@ const CreateListing = () => {
     sell: false, // Newly added field
   });
 
-  
+  useEffect(() => {
+    const fetchListing = async () => {
+      const response = await axios.get(`/listing/get/${id}`);
+      const data = response.data;
+      if (response.status !== 200) {
+        console.log(data.message);
+      }
+      setFormData(data);
+    };
+
+    fetchListing();
+  }, [id]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.imageUrls.length < 0) {
@@ -49,12 +62,12 @@ const CreateListing = () => {
     try {
       setLoading(true);
       setError(false);
-      const response = await axios.post("/listing/create", {
+      const response = await axios.put(`/listing/update/${id}`, {
         ...formData,
         userRef: currentUser.user._id,
       });
 
-      const data = response.data;
+      const data = response.data.updateListing;
       setLoading(false);
       if (response.status !== 200) {
         setError(data.message);
@@ -155,7 +168,7 @@ const CreateListing = () => {
 
   return (
     <Container className="my-5">
-      <h1 className="text-center mb-4">Create A Listing</h1>
+      <h1 className="text-center mb-4">Update Listing</h1>
       <Form onSubmit={handleSubmit}>
         <Row className="mb-3">
           <Col>
@@ -359,7 +372,7 @@ const CreateListing = () => {
             variant="primary"
             type="submit"
           >
-            {loading ? "Creating...." : "CREATE LISTING"}
+            {loading ? "Updating...." : "Update"}
           </Button>
         </div>
         {error && <p className="text-danger">{error}</p>}
@@ -368,4 +381,4 @@ const CreateListing = () => {
   );
 };
 
-export default CreateListing;
+export default UpdateListing;

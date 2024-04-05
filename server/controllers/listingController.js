@@ -37,5 +37,17 @@ exports.updateListing = catchAysncError(async (req, res, next) => {
   );
   res
     .status(200)
-    .json({ success: true, message: "Listing deleted successfully" });
+    .json({
+      success: true,
+      message: "Listing deleted successfully",
+      updateListing,
+    });
+});
+
+exports.getListing = catchAysncError(async (req, res, next) => {
+  const listing = await Listing.findById(req.params.id);
+  if (!listing) {
+    next(new ErrorHandler("Listing not found", 404));
+  }
+  res.status(200).json(listing);
 });

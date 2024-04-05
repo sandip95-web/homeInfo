@@ -19,6 +19,7 @@ import {
 } from "../redux/user/userSlice";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { Link } from "react-router-dom";
 
 const Profile = () => {
   const { currentUser, loading } = useSelector((state) => state.user);
@@ -300,12 +301,14 @@ const Profile = () => {
                           >
                             Delete
                           </Button>
-                          <Button
-                            variant="info"
+                          <Link
+                            className="btn btn-success"
+                            to={`/updatelisting/${listing._id}`}
+
                             // onClick={() => handleEditListing(listing._id)}
                           >
                             Edit
-                          </Button>
+                          </Link>
                         </div>
                       </div>
                     </div>
