@@ -13,6 +13,7 @@ import "react-toastify/dist/ReactToastify.css";
 import PrivateRoute from "./components/PrivateRoute";
 import CreateListing from "./pages/CreateLising";
 import UpdateListing from "./pages/UpdateListing";
+import Listing from "./pages/Listing";
 
 axios.defaults.baseURL = "http://localhost:4000";
 axios.defaults.withCredentials = true;
@@ -30,6 +31,7 @@ function App() {
             <Route path="/createlisting" element={<CreateListing />} />
             <Route path="/updatelisting/:id" element={<UpdateListing />} />
           </Route>
+          <Route path="/listing/:id" element={<Listing />} />
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
           <Route path="/about" element={<About />} />
