@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { Card, Container, Row, Col, Spinner, Carousel } from 'react-bootstrap';
+import { Card, Container, Row, Col, Spinner, Carousel, Form, Button } from 'react-bootstrap';
 import { BsFillHouseDoorFill } from 'react-icons/bs';
 import { FaBed, FaRegMoneyBillAlt, FaShower } from 'react-icons/fa';
 
@@ -10,6 +10,9 @@ const Listing = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [listing, setListing] = useState({});
+  const [message, setMessage] = useState("");
+  const [showMessageInput, setShowMessageInput] = useState(false);
+  const [contactButtonClicked, setContactButtonClicked] = useState(false);
 
   useEffect(() => {
     const fetchListing = async () => {
@@ -29,6 +32,13 @@ const Listing = () => {
     };
     fetchListing();
   }, [id]);
+
+  const handleSendMessage = () => {
+    // Logic to send message to landlord
+    console.log("Message sent:", message);
+    // Reset message input
+    setMessage("");
+  };
 
   return (
     <Container>
@@ -65,6 +75,21 @@ const Listing = () => {
                   <Card.Text><FaRegMoneyBillAlt /> Price: ${listing.regularPrice}</Card.Text>
                   <Card.Text><FaBed /> Bedrooms: {listing.bedrooms}</Card.Text>
                   <Card.Text><FaShower/> Bathrooms: {listing.bathrooms}</Card.Text>
+                  {!showMessageInput && !contactButtonClicked && (
+                    <Button onClick={() => {setShowMessageInput(true); setContactButtonClicked(true);}}>Contact Landlord</Button>
+                  )}
+                  {showMessageInput && (
+                    <div className="mt-3">
+                      <Form.Control
+                        as="textarea"
+                        rows={3}
+                        placeholder="Type your message..."
+                        value={message}
+                        onChange={(e) => setMessage(e.target.value)}
+                      />
+                      <Button className="mt-2" onClick={handleSendMessage}>Send</Button>
+                    </div>
+                  )}
                 </Card.Body>
               </Card>
             </Col>
