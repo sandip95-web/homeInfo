@@ -99,6 +99,11 @@ const Listing = () => {
                 <Card.Text>
                   <FaRegMoneyBillAlt /> Price: ${listing.regularPrice}
                 </Card.Text>
+                {listing.offer && listing.discountPrice && (
+                  <Card.Text>
+                    <FaRegMoneyBillAlt /> Discounted Price: ${listing.discountedPrice}
+                  </Card.Text>
+                )}
                 <Card.Text>
                   <FaBed /> Bedrooms: {listing.bedrooms}
                 </Card.Text>
