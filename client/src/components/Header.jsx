@@ -6,9 +6,29 @@ import Form from "react-bootstrap/Form";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Header() {
   const { currentUser } = useSelector((state) => state.user);
+  const [searchTerm, setSearchTerm] = useState("");
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("searchTerm", searchTerm);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(location.search);
+    const searchParamFromUrl = urlParams.get("searchTerm");
+    if (searchParamFromUrl) {
+      setSearchTerm(searchParamFromUrl);
+    }
+  }, [location.search]);
 
   return (
     <Navbar expand="lg" className="bg-body-tertiary">
@@ -18,14 +38,16 @@ function Header() {
         </Navbar.Brand>
         <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll">
-          <Form className="d-flex mx-auto w-50">
+          <Form onSubmit={handleSubmit} className="d-flex mx-auto w-50">
             <Form.Control
               type="search"
+              value={searchTerm}
               placeholder="Search"
               className="me-2"
               aria-label="Search"
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <Button variant="outline-dark">
+            <Button type="submit" variant="outline-dark">
               <RiSearchLine />
             </Button>
           </Form>
